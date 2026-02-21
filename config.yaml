@@ -1,0 +1,36 @@
+#defining some parameters for our reverse proxy
+# Browser → host:8000 → container:8000 → proxy app
+server:
+  listen: 8000 # Application layer(browser) → your proxy server listening
+  upstreams:
+    - id: server1
+      url: http://server1:8001 #resolved by the internal Docker DNS, so we can use the service name as the hostname
+
+    - id: server2
+      url: http://server2:8002
+
+    - id: server3
+      url: http://server3:8003
+
+  headers:
+    - key: X-Forwarded-For
+      value: '$ip' #client's IP address, which is obtained from the incoming request and added to the X-Forwarded-For header before forwarding the request to the upstream server.
+
+    - key: X-Forwarded-Proto
+      value: '$scheme' #the protocol used by the client to make the request (http or https), which is obtained from the incoming request and added to the X-Forwarded-Proto header before forwarding the request to the upstream server.
+
+    - key: X-Forwarded-Host
+      value: '$host' #the original host requested by the client in the Host header
+
+    - key: X-Forwarded-Port
+      value: '$server_port' #the port on which the proxy server is listening, which is obtained from the incoming request and added to the X-Forwarded-Port header before forwarding the request to the upstream server.
+
+  endpoints: #endpoints
+    - endpoint: /
+      upstreams: [server1, server2, server3]
+
+    - endpoint: /admin
+      upstreams: [server3]
+
+    - endpoint: /api
+      upstreams: [server1, server2]

@@ -1,0 +1,53 @@
+services:
+  server1:
+    image: hashicorp/http-echo:1.0.0
+    command: ["-listen=:8001", "-text=server 1 is up and running!"]
+    # ports:
+    #   - "8001:8001" # we dont need to expose these ports to the host machine, but we do need to expose them to the other containers in the network
+
+  server2:
+    image: hashicorp/http-echo:1.0.0
+    command: ["-listen=:8002", "-text=server 2 is up and running!"]
+    # ports:
+    #   - "8002:8002"
+
+  server3:
+    image: hashicorp/http-echo:1.0.0
+    command: ["-listen=:8003", "-text=server 3 is up and running!"]
+    # ports:
+    #   - "8003:8003"
+
+  rev-proxy: #rev proxy is a service that will route requests to the other services based on the config.yaml file, and is running on port 8000 in the container, and we will map it to port 8000 on the host machine, where the real reverse proxy server is running
+    image: node:20-alpine
+    working_dir: /app # where the code is located in the container
+  #   /app
+  # ├── src/
+  # ├── dist/
+  # ├── config.yaml
+  # ├── package.json
+    volumes: #volumes - ./:/app This means: PC current folder  →  container /app volume makes files visible
+      - ./:/app
+    command: sh -c "npm install && npm run build && npm start"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - server1
+      - server2
+      - server3
+
+
+#When we run Compose, Docker automatically creates:
+# a private network
+# an internal DNS server
+# service name → container IP mapping
+
+# So inside the network:
+
+# server1 → (some internal IP like 172.x.x.x)
+# server2 → (another internal IP)
+# rev-proxy → (another internal IP)
+
+# Inside the Compose network:
+# service name = hostname
+
+

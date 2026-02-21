@@ -1,0 +1,31 @@
+import {z} from 'zod';
+
+//object ka alag schema banega
+const upstreamSchema = z.object({
+    id: z.string(),
+    url: z.url()
+})
+
+const headerSchema = z.object({
+    key: z.string(),
+    value: z.string()
+})
+
+const endpointSchema = z.object({
+    endpoint: z.string(),
+    upstreams: z.array(z.string()) //array of upstream ids, we will match these ids with the upstreams defined in the config file and then forward the request to the corresponding upstream url
+})
+
+const serverSchema = z.object({
+    listen: z.number(),
+    workers: z.number().optional().default(1),
+    upstreams: z.array(upstreamSchema),
+    headers: z.array(headerSchema).optional(),
+    endpoints: z.array(endpointSchema)
+})
+
+const rootConfigSchema = z.object({
+    server: serverSchema
+})
+
+export default rootConfigSchema;
