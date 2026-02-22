@@ -1,7 +1,8 @@
 import { program } from 'commander'; // to work with the cli
 import { loadConfig, validateConfig } from './config.js';
+import { forwardRequesttoProxyHandler } from './server/server.js';
 
-async function main() {
+export async function main() {
     program.option('--config <path>') //asking for the config file path
     program.parse(); //parsing the command line arguments
 
@@ -10,11 +11,19 @@ async function main() {
     if(options && options.config) {
         const receivedConfigFile = await loadConfig(options.config); //load the config file
         const validatedConfig = await validateConfig(receivedConfigFile); //validate the config file
-        console.log('Validated Config:', validatedConfig);
+        return validatedConfig; 
     }
 }
 
-main()
+forwardRequesttoProxyHandler()
+
+// master process
+//    ↓
+// multiple workers
+//    ↓
+// each worker runs Express
+
+
 // docker-compose → starts rev-proxy container
 // rev-proxy container → runs the Node app
 // Node app → reads config.yaml

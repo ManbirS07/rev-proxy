@@ -12,7 +12,7 @@ const headerSchema = z.object({
 })
 
 const endpointSchema = z.object({
-    endpoint: z.string(),
+    path: z.string(),
     upstreams: z.array(z.string()) //array of upstream ids, we will match these ids with the upstreams defined in the config file and then forward the request to the corresponding upstream url
 })
 

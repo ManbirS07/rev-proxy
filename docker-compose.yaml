@@ -1,19 +1,19 @@
 services:
   server1:
     image: hashicorp/http-echo:1.0.0
-    command: ["-listen=:8001", "-text=server 1 is up and running!"]
+    command: ["-listen=:8001", "-text=server 1 is up and received your request!"]
     # ports:
     #   - "8001:8001" # we dont need to expose these ports to the host machine, but we do need to expose them to the other containers in the network
 
   server2:
     image: hashicorp/http-echo:1.0.0
-    command: ["-listen=:8002", "-text=server 2 is up and running!"]
+    command: ["-listen=:8002", "-text=server 2 is up and received your request!"]
     # ports:
     #   - "8002:8002"
 
   server3:
     image: hashicorp/http-echo:1.0.0
-    command: ["-listen=:8003", "-text=server 3 is up and running!"]
+    command: ["-listen=:8003", "-text=server 3 is up and received your request!"]
     # ports:
     #   - "8003:8003"
 

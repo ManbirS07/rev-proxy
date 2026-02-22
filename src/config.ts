@@ -1,6 +1,6 @@
 import yaml from 'js-yaml';
 import { promises as fs } from 'fs'
-import rootConfigSchema from './config-schema.js';
+import rootConfigSchema from './config-schema.js'
 
 export async function loadConfig(filePath: string) {
     try {

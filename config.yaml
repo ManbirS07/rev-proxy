@@ -26,11 +26,11 @@ server:
       value: '$server_port' #the port on which the proxy server is listening, which is obtained from the incoming request and added to the X-Forwarded-Port header before forwarding the request to the upstream server.
 
   endpoints: #endpoints
-    - endpoint: /
+    - path: /
       upstreams: [server1, server2, server3]
 
-    - endpoint: /admin
+    - path: /admin
       upstreams: [server3]
 
-    - endpoint: /api
+    - path: /api
       upstreams: [server1, server2]
