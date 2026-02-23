@@ -1,2 +1,14 @@
 node_modules
 dist
+
+src/server/balancers/leastConnections.ts
+src/server/balancers/ipHash.ts
+src/server/balancers/roundRobin.ts
+
+src/server/proxy_handler.ts
+src/server/server.ts
+
+src/types/balancer.ts
+src/types/endpoints.ts
+src/types/upstreams.ts
+

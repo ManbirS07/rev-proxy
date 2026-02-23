@@ -1,5 +1,7 @@
 #defining some parameters for our reverse proxy
 # Browser → host:8000 → container:8000 → proxy app
+
+# to add -> strategy for load balancing, health checks, retry logic, logging and monitoring, security features like rate limiting and IP blocking, support for WebSockets and HTTP/2, and a user-friendly dashboard for managing the proxy server.
 server:
   listen: 8000 # Application layer(browser) → your proxy server listening
   upstreams:
@@ -27,10 +29,13 @@ server:
 
   endpoints: #endpoints
     - path: /
+      strategy: round-robin 
       upstreams: [server1, server2, server3]
 
     - path: /admin
+      strategy: least-connections
       upstreams: [server3]
 
     - path: /api
+      strategy: ip-hash
       upstreams: [server1, server2]
