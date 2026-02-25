@@ -33,9 +33,9 @@ server:
       upstreams: [server1, server2, server3]
 
     - path: /admin
-      strategy: least-connections
+      strategy: ip-hash
       upstreams: [server3]
 
     - path: /api
-      strategy: ip-hash
-      upstreams: [server1, server2]
+      strategy: least-connections
+      upstreams: [server1, server2, server3]

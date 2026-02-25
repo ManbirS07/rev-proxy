@@ -4,8 +4,6 @@ import { main } from '../index.js';
 import { proxyRequestHandler } from './proxy_handler.js';
 import { createBalancer } from './balancers/balancerFactory.js';
 
-//CREATING A NEW GLOBAL MAP FOR STORING GLOBAL REQUESTS TO EACH UPSTREAM SERVER
-export const globalRequestMap = new Map<string, number>(); //key is the upstream id and value is the number of requests currently being handled by that upstream server
 
 export async function startServer(config: Awaited<ReturnType<typeof main>>) {
     const app = express();

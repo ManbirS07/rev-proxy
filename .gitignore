@@ -1,7 +1,4 @@
 node_modules
 dist
 
-src/server/balancers/leastConnections.ts
-src/server/balancers/ipHash.ts
-
-
+/src/server/balancers/ipHash.ts
