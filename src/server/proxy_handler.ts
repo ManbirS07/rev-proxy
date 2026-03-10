@@ -6,7 +6,7 @@ import type { Upstream } from '../types/upstreams.js';
 export const globalRequestMap = new Map<string, number>(); //key is the upstream id and value is the number of requests currently being handled by that upstream server
 
 export async function proxyRequestHandler(balancer: any, strategy: string, req: express.Request, res: express.Response, 
-    upstreams: Upstream[], httpServer: Server) { 
+    upstreams: Upstream[]) { 
 
     const upstreamId = balancer.getNextUpstream(req); // pass req so ip-hash can read req.ip
     if (!upstreamId) {
@@ -35,6 +35,7 @@ export async function proxyRequestHandler(balancer: any, strategy: string, req: 
 
         // Simulated delay to test least-connections with concurrent requests.
         //because the upstreams react in microseconds
+        //handled race conditions in least-connections balancer by incrementing the count right when the upstream is picked, so that concurrent requests will see the updated count and pick the next least loaded upstream instead of all picking the same one. This simulates how least-connections should work under concurrent load.
 
         //so what happens here is:
         //1. 10 requests come in at the same time, all hitting the least-connections endpoint
@@ -43,12 +44,21 @@ export async function proxyRequestHandler(balancer: any, strategy: string, req: 
         //after this promise is resolved, the first request releases its upstream, decrementing its count back to 0, so the next request that comes in will see that this upstream has 0 connections and pick it again. This simulates how least-connections should work under concurrent load.
 
         // The await new Promise(resolve => setTimeout(resolve, 5000)) pauses the async function for 5 seconds
-        // before the fetch. During that pause, Node.js yields control back to the event loop,
+        // before the fetch. During that pause, Node.js yields control back to the event loop, -> the pause is only for that specific request, other incoming requests can still be processed by the server and hit their handlers, including the balancer's getNextUpstream and onRequestStart methods,
         // allowing other incoming requests to run their handlers.
         // Those subsequent requests will see elevated counts and pick server2/server3.
+
+        // If the server were to process each request synchronously, it would have to wait for each request
+        // to complete before it could process the next one. This would result in poor performance, especially
+        // when there are many concurrent requests.
+
+        // Instead, the server can use the event loop to handle requests asynchronously.
+        // When a client sends a request, the server places it in a queue. The event loop then processes
+        // the requests in the queue in the order they were received. This allows the server to handle multiple
+        // requests concurrently without blocking.
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        const response = await fetch(upstreamUrl, {
+        const response = await fetch(upstreamUrl, { //comes in microseconds
             method: req.method,
             headers: {
                 'Content-Type': req.get('Content-Type') || 'application/json',

@@ -13,7 +13,7 @@ class IpHashBalancer {
         const hash = createHash('sha256')
         hash.update(ip); //update the hash with the client's IP address
 
-        const digest = hash.digest('hex'); //get the hash digest as a hexadecimal string
+        const digest = hash.digest('hex'); //get the hash digest as a hexadecimal string to use as a key for consistent hashing
         const index = parseInt(digest.substring(0, 8), 16) % this.availableUpstreams.length; //use the first 8 characters of the hash to determine the index of the upstream server. This ensures that the same IP will consistently map to the same upstream as long as the number of upstreams doesn't change.
         return this.availableUpstreams[index];
     }

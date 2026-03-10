@@ -39,3 +39,12 @@ server:
     - path: /api
       strategy: least-connections
       upstreams: [server1, server2, server3]
+
+  # Token Bucket Rate Limiting (per IP)
+  # capacity    = max burst size (bucket starts full, so new clients can burst)
+  # refill_rate = tokens added per second (sustained rate after burst is used up)
+  # Example: capacity=10, refill_rate=2 → burst 10, then max 2 req/sec
+  rate_limit:
+    enabled: true
+    capacity: 10
+    refill_rate: 2
