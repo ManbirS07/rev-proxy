@@ -1,14 +1,16 @@
 import express from 'express';
-import type { Server } from 'node:http';
 import type { Upstream } from '../types/upstreams.js';
 
 //CREATING A NEW GLOBAL MAP FOR STORING GLOBAL REQUESTS TO EACH UPSTREAM SERVER
 export const globalRequestMap = new Map<string, number>(); //key is the upstream id and value is the number of requests currently being handled by that upstream server
 
-export async function proxyRequestHandler(balancer: any, strategy: string, req: express.Request, res: express.Response, 
-    upstreams: Upstream[]) { 
-
+export async function proxyRequestHandler(balancer: any, strategy: string, req: express.Request, res: express.Response, upstreams: Upstream[]) { 
     const upstreamId = balancer.getNextUpstream(req); // pass req so ip-hash can read req.ip
+
+
+    //retry logic
+
+
     if (!upstreamId) {
         res.status(502).send('No upstream available');
         return;
@@ -34,8 +36,9 @@ export async function proxyRequestHandler(balancer: any, strategy: string, req: 
         console.log(`Forwarding request to upstream: ${upstreamUrl}`);
 
         // Simulated delay to test least-connections with concurrent requests.
-        //because the upstreams react in microseconds
-        //handled race conditions in least-connections balancer by incrementing the count right when the upstream is picked, so that concurrent requests will see the updated count and pick the next least loaded upstream instead of all picking the same one. This simulates how least-connections should work under concurrent load.
+        // because the upstreams react in microseconds
+        // handled race conditions in least-connections balancer by incrementing the count right when the upstream is picked, so that concurrent requests will see the updated count and pick the next least loaded upstream instead of all picking the same one.
+        // This simulates how least-connections should work under concurrent load.
 
         //so what happens here is:
         //1. 10 requests come in at the same time, all hitting the least-connections endpoint

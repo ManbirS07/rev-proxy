@@ -1,5 +1,5 @@
 import { program } from 'commander'; // to work with the cli
-import { loadConfig, validateConfig } from './config.js';
+import { loadConfig, validateConfig } from './configs/config.js';
 import { forwardRequesttoProxyHandler } from './server/server.js';
 
 export async function main() {
@@ -15,7 +15,7 @@ export async function main() {
     }
 }
 
-forwardRequesttoProxyHandler()
+forwardRequesttoProxyHandler() //main function called here
 
 // master process
 //    ↓
@@ -39,4 +39,4 @@ forwardRequesttoProxyHandler()
 // Proxy sees the routing in node app
 // Proxy forwards to server1:8001 etc
 // Docker DNS resolves server names
-// 7Response comes back
+// Response comes back
